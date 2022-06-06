@@ -14,11 +14,14 @@
 #define ADC_RESOLUTION_BITS 12
 #define MAX_AMPERAGE 20
 #define VREF 3.3
-#define RMS_VOLTAGE 220
+#define RMS_VOLTAGE 230
 
 float val;
-int power;
+int power; // apparent power VA
 char buf[50];
+float energy=0; // Ah
+
+// To calculate kWh we need the power factor so for now we can monitor energy consumption in Ah
 
 float calculate_amp()
 {
@@ -52,12 +55,13 @@ void setup()
 void loop()
 {
   val = calculate_amp();
+  energy += val*(0.27777778/1000);
   power = RMS_VOLTAGE*val;
-  sprintf(buf, "%.2f A  /  %d VA @ %d V RMS", val, power, RMS_VOLTAGE);
+  sprintf(buf, "Current: %.2f A  |  Apparent power: %d VA @ %d V RMS  |  Energy consumed: %f Ah", val, power, RMS_VOLTAGE, energy);
   Serial.println(buf);
 
   // Serial.println(analogRead(ADC_PIN));
 
-  delay(500);
+  delay(1000);
 }
 
