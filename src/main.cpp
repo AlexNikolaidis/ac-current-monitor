@@ -19,9 +19,8 @@
 float val;
 int power; // apparent power VA
 char buf[50];
-float energy=0; // Ah
-
-// To calculate kWh we need the power factor so for now we can monitor energy consumption in Ah
+float energy_ah=0; // Ah
+float energy_kwh=0; // kWh (assuming power factor = 1)
 
 float calculate_amp()
 {
@@ -55,9 +54,10 @@ void setup()
 void loop()
 {
   val = calculate_amp();
-  energy += val*(0.27777778/1000);
+  energy_ah += val/3600;
+  energy_kwh += (val*RMS_VOLTAGE)/3600000;
   power = RMS_VOLTAGE*val;
-  sprintf(buf, "Current: %.2f A  |  Apparent power: %d VA @ %d V RMS  |  Energy consumed: %f Ah", val, power, RMS_VOLTAGE, energy);
+  sprintf(buf, "Current: %5.2f A   |   Power: %4d W   |   Energy: %10.6f Ah  %10.6f kWh", val, power, energy_ah, energy_kwh);
   Serial.println(buf);
 
   // Serial.println(analogRead(ADC_PIN));
